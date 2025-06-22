@@ -71,7 +71,7 @@ export function GameProvider({ children }) {
     return posY + lowestOffset >= 19;
   }
 
-  // Automatic Movement
+  // Automatic Falling Movement
   useEffect(() => {
     const interval = setInterval(() => {
       const maxY = getLowestBlockOffset(currentPiece.shape);
@@ -118,17 +118,22 @@ export function GameProvider({ children }) {
 
       if (event.key === "ArrowDown") {
         const newY = positionRef.current.y + 1;
-        setPosition((prev) => ({
-          ...prev,
-          y: newY,
-        }));
+        if (!reachedBottom(pieceRef.current, positionRef.current.y)) {
+          setPosition((prev) => ({
+            ...prev,
+            y: newY,
+          }));
+        }
       }
 
       if (event.key === "ArrowUp") {
-        setCurrentPiece((prev) => ({
-          ...prev,
-          shape: rotateMatrixClockwise(prev.shape),
-        }));
+        const newY = positionRef.current.y + 1;
+        if (!reachedBottom(pieceRef.current, positionRef.current.y)) {
+          setCurrentPiece((prev) => ({
+            ...prev,
+            shape: rotateMatrixClockwise(prev.shape),
+          }));
+        }
       }
     };
 
