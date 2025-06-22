@@ -1,12 +1,10 @@
-import MainContainer from "./components/containers/MainContainer";
+import Board from "./components/containers/Board";
 import "./index.css";
 
 function App() {
   return (
-    <div className="flex min-h-screen w-screen flex-col items-center justify-center text-white">
-      <main className="flex h-full w-full items-center justify-center">
-        <MainContainer />
-      </main>
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center">
+      <Board />
     </div>
   );
 }
