@@ -1,5 +1,5 @@
 // GameContext.jsx
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { TETROMINOES } from "../logic/tetrominoes";
 
 const GameContext = createContext();
@@ -18,9 +18,18 @@ export function GameProvider({ children }) {
   const [currentPiece, setCurrentPiece] = useState(getRandomPiece());
   const [position, setPosition] = useState({ x: 3, y: 0 });
 
-  const shapeHeight = currentPiece.shape.length;
-  const shapeWidth = currentPiece.shape[0].length;
+  const positionRef = useRef(position);
+  const pieceRef = useRef(currentPiece);
 
+  useEffect(() => {
+    positionRef.current = position;
+  }, [position]);
+
+  useEffect(() => {
+    pieceRef.current = currentPiece;
+  }, [currentPiece]);
+
+  // Lowest Wall Collition
   const getLowestBlockOffset = (shape) => {
     let lastRowWithBlock = 0;
     shape.forEach((row, rowIndex) => {
@@ -31,7 +40,7 @@ export function GameProvider({ children }) {
     return lastRowWithBlock;
   };
 
-  // Pieces Rotation
+  // Pieces Rotation Clockwise
   function rotateMatrixClockwise(matrix) {
     const size = matrix.length;
     const rotated = Array.from({ length: size }, () => Array(size).fill(0));
@@ -41,6 +50,25 @@ export function GameProvider({ children }) {
       }
     }
     return rotated;
+  }
+
+  // Pieces Collition for X Axis
+  function xCollition(piece, positionX) {
+    return piece.shape.some((row, y) => {
+      return row.some((cell, x) => {
+        if (cell === 1) {
+          const newX = positionX + x;
+          return newX < 0 || newX >= 10;
+        }
+        return false;
+      });
+    });
+  }
+
+  // Check if pieces reached bottom
+  function reachedBottom(piece, posY) {
+    const lowestOffset = getLowestBlockOffset(piece.shape);
+    return posY + lowestOffset >= 19;
   }
 
   // Automatic Movement
@@ -63,25 +91,36 @@ export function GameProvider({ children }) {
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "ArrowLeft") {
-        if (isWithinBounds(currentPiece, position.x - 1)) {
+        const newX = positionRef.current.x - 1;
+        if (
+          !xCollition(pieceRef.current, newX) &&
+          !reachedBottom(pieceRef.current, positionRef.current.y)
+        ) {
           setPosition((prev) => ({
             ...prev,
-            x: prev.x - 1,
+            x: newX,
           }));
         }
       }
 
       if (event.key === "ArrowRight") {
-        setPosition((prev) => ({
-          ...prev,
-          x: prev.x + 1,
-        }));
+        const newX = positionRef.current.x + 1;
+        if (
+          !xCollition(pieceRef.current, newX) &&
+          !reachedBottom(pieceRef.current, positionRef.current.y)
+        ) {
+          setPosition((prev) => ({
+            ...prev,
+            x: newX,
+          }));
+        }
       }
 
       if (event.key === "ArrowDown") {
+        const newY = positionRef.current.y + 1;
         setPosition((prev) => ({
           ...prev,
-          y: prev.y + 1,
+          y: newY,
         }));
       }
 
