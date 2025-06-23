@@ -1,11 +1,14 @@
 import { useEffect } from "react";
 import { getLowestBlockOffset } from "../logic/tetrominoUtils";
 
-export function useAutoFall(currentPiece, position, setPosition) {
+export function useAutoFall(pieceRef, positionRef, setPosition) {
   useEffect(() => {
     const interval = setInterval(() => {
-      const maxY = getLowestBlockOffset(currentPiece.shape);
-      if (position.y + maxY >= 19) return;
+      const pos = positionRef.current;
+      const piece = pieceRef.current;
+
+      const maxY = getLowestBlockOffset(piece.shape);
+      if (pos.y + maxY >= 19) return;
 
       setPosition((prev) => ({
         x: prev.x,
@@ -14,5 +17,5 @@ export function useAutoFall(currentPiece, position, setPosition) {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [currentPiece, position, setPosition]);
+  }, [pieceRef, positionRef, setPosition]);
 }

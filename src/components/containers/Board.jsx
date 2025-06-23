@@ -12,8 +12,8 @@ function Board() {
     pieceRef,
   } = useGameContext();
 
-  useAutoFall(currentPiece, position, setPosition); // ✅
-  usePieceControls(pieceRef, positionRef, setPosition, setCurrentPiece); // ✅
+  useAutoFall(pieceRef, positionRef, setPosition);
+  usePieceControls(pieceRef, positionRef, setPosition, setCurrentPiece); 
 
   return (
     <main className="flex h-[600px] w-[300px] rounded-xl bg-gradient-to-br from-gray-400 via-gray-400 to-gray-700 p-6 shadow-2xl sm:h-[800px] sm:w-[400px]">
