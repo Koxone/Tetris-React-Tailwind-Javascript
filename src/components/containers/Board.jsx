@@ -1,6 +1,7 @@
 import { useGameContext } from "../../context/GameContext";
 import { useAutoFall } from "../../hooks/useAutoFall";
 import { usePieceControls } from "../../hooks/usePieceControl";
+import { usePieceFixation } from "../../hooks/usePieceFixation";
 
 function Board() {
   const {
@@ -10,10 +11,19 @@ function Board() {
     setPosition,
     positionRef,
     pieceRef,
+    board,
+    setBoard, // 🔧 faltaba
   } = useGameContext();
 
   useAutoFall(pieceRef, positionRef, setPosition);
-  usePieceControls(pieceRef, positionRef, setPosition, setCurrentPiece); 
+  usePieceControls(pieceRef, positionRef, setPosition, setCurrentPiece);
+  usePieceFixation(
+    pieceRef,
+    positionRef,
+    setBoard,
+    setCurrentPiece,
+    setPosition,
+  );
 
   return (
     <main className="flex h-[600px] w-[300px] rounded-xl bg-gradient-to-br from-gray-400 via-gray-400 to-gray-700 p-6 shadow-2xl sm:h-[800px] sm:w-[400px]">
@@ -26,6 +36,14 @@ function Board() {
             let isPieceCell = false;
             let pieceColor = "";
 
+            // 🔹 Si la celda ya fue fijada al board
+            const boardCell = board[row][col];
+            if (boardCell?.value === 1) {
+              isPieceCell = true;
+              pieceColor = boardCell.color;
+            }
+
+            // 🔹 Si forma parte de la pieza actual
             currentPiece.shape.forEach((pieceRow, y) => {
               pieceRow.forEach((cell, x) => {
                 if (cell === 1) {

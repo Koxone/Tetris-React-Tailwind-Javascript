@@ -8,6 +8,13 @@ export function useGameContext() {
 }
 
 export function GameProvider({ children }) {
+  const createEmptyBoard = () => {
+    return Array.from({ length: 20 }, () =>
+      Array.from({ length: 10 }, () => ({ value: 0, color: "" })),
+    );
+  };
+
+  const [board, setBoard] = useState(createEmptyBoard());
   const [currentPiece, setCurrentPiece] = useState(getRandomPiece());
   const [position, setPosition] = useState({ x: 3, y: 0 });
 
@@ -31,6 +38,8 @@ export function GameProvider({ children }) {
         setPosition,
         positionRef,
         pieceRef,
+        board,
+        setBoard,
       }}
     >
       {children}
